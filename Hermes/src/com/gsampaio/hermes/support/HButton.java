@@ -1,4 +1,5 @@
-package com.gsampaio.hermes;
+package com.gsampaio.hermes.support;
+
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -11,6 +12,11 @@ public class HButton extends Button{
 		setOnClickListener(sayButton);
 	}
 	
+	public HButton(Context context) {
+		super(context);
+		setOnClickListener(sayButton);
+	}
+
 	private OnClickListener sayButton = new OnClickListener() {		
 		public void onClick(View v) {
 			Voice.speak(getContext(), getTag().toString(), false);	

@@ -10,10 +10,11 @@
     <application
         android:icon="@drawable/hemes_sandals"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
         <activity
             android:name=".MainBoard"
-            android:label="@string/title_activity_main_board" >
+            android:label="@string/app_name"
+            android:screenOrientation="landscape" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

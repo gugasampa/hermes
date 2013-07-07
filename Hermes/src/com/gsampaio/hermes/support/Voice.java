@@ -1,4 +1,4 @@
-package com.gsampaio.hermes;
+package com.gsampaio.hermes.support;
 
 import android.content.Context;
 import android.speech.tts.TextToSpeech;
