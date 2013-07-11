@@ -14,10 +14,15 @@ public class PageFragment extends Fragment {
 
 	 public static final String EXTRA_MESSAGE = "EXTRA_MESSAGE";
 	 public static Activity ctx;
+	 public static int board_id;
+	 public static int page;
 	 
-	 public static final PageFragment newInstance(Activity activity)
+	 public static final PageFragment newInstance(Activity activity, int _board_id, int _page)
 	 {
+	   board_id = _board_id;
 	   ctx = activity;
+	   page = _page;
+	   
 	   PageFragment f = new PageFragment();
 	   return f;
 	 }
@@ -27,7 +32,7 @@ public class PageFragment extends Fragment {
 	   Bundle savedInstanceState) {
 	   View v = inflater.inflate(R.layout.fragment_screen_slide_page, container, false);
 	   GridView gridview = (GridView) v.findViewById(R.id.itensGrid);
-	   gridview.setAdapter(new ItemAdapter(ctx));
+	   gridview.setAdapter(new SymbolAdapter(ctx, board_id, page));
 	 
 	   return v;
 	 }
