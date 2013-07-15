@@ -55,13 +55,13 @@ public class SymbolAdapter extends BaseAdapter {
 	  DBHelper db = new DBHelper(mContext);
 	  Symbol symbol = db.getSymbol(board_id, page, position);
 	  if(symbol.getId() == -1){ //símbolo vazio
-		  btn.setBackgroundResource(R.drawable.quero);
+		  btn.setBackgroundResource(R.drawable.add);
 		  btn.setId(-1);
-		  btn.setOnClickListener(openCamera);
+		  btn.setOnClickListener(new blankSymbol(board_id));
 	  }else{
-		  if(symbol.isPermanent()){
-			  btn.setBackgroundResource((mContext.getResources()
-					  .getIdentifier(symbol.getImage_path(), "drawable", mContext.getPackageName())));
+		  if(symbol.isPermanent()==1){
+			  int resID = mContext.getResources().getIdentifier("quero", "drawable", mContext.getPackageName());
+			  btn.setBackgroundDrawable(mContext.getResources().getDrawable(resID));
 		  }else{
 			  //set background com caminho para imagem no cartão
 		  }
@@ -76,19 +76,24 @@ public class SymbolAdapter extends BaseAdapter {
 	  return btn;
 	 }
 	 
-	 OnClickListener openCamera = new OnClickListener(){
-		@Override
-		public void onClick(View v) {
-			//Abre a camera
-		}
-	 };
-	 
 	 OnClickListener finalSymbol = new OnClickListener(){
 		@Override
 		public void onClick(View v) {
 			Voice.speak(mContext, v.getTag().toString(), false);
 		}
 	 };
+	 
+	 class blankSymbol implements OnClickListener{
+		 private final int board_id;
+		 
+		 public blankSymbol(int board_id){
+			 this.board_id = board_id;
+		 }
+		 
+		 public void onClick(View v){
+			//Abre camera
+		 }
+	 }
 	 
 	 class categorySymbol implements OnClickListener{
 		 private final int child_board_id;
@@ -101,6 +106,7 @@ public class SymbolAdapter extends BaseAdapter {
 			Voice.speak(mContext, v.getTag().toString(), false);
 			Intent intent = new Intent(mContext, MainBoard.class);
 			intent.putExtra("board_id", child_board_id);
+			mContext.startActivity(intent);
 		 }
 	 }
 	

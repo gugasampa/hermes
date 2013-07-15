@@ -11,6 +11,8 @@ public class DBHelper extends SQLiteOpenHelper {
 	private static final String DATABASE_NAME = "hermes.db";
 	private static final int DATABASE_VERSION = 1;
 	
+	private static final int TYPE_CATEGORY = 1;
+	
 	private static final String TABLE_SYMBOL = "symbols";
 	
 	//Campos da tabela "symbols"
@@ -41,6 +43,7 @@ public class DBHelper extends SQLiteOpenHelper {
 				PAGE+ " INTEGER,"+
 				PERMANENT+" BOOLEAN);";
         db.execSQL(CREATE_SYMBOLS_TABLE);
+        populate(db);
 	}
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
@@ -52,13 +55,17 @@ public class DBHelper extends SQLiteOpenHelper {
 		SQLiteDatabase db = this.getWritableDatabase();
 		ContentValues values = new ContentValues();
 		values.put(BOARD_ID, symbol.getBoard_id());
-		values.put(CHILD_BOARD_ID, symbol.getChild_board_id());
 		values.put(TEXT, symbol.getText());
 		values.put(IMAGE_PATH, symbol.getImage_path());
 		values.put(TYPE, symbol.getType());
 		values.put(POSITION, symbol.getPosition());
 		values.put(PAGE, symbol.getPage());
 		values.put(PERMANENT, symbol.isPermanent());
+		if(symbol.getType() != TYPE_CATEGORY){
+			values.put(CHILD_BOARD_ID, -1); //Se não é categoria, não possui child board
+		}else{
+			values.put(CHILD_BOARD_ID, symbol.getChild_board_id());
+		}
 		
 		long id = db.insert(TABLE_SYMBOL, null, values);
 		db.close();
@@ -82,11 +89,13 @@ public class DBHelper extends SQLiteOpenHelper {
 					Integer.parseInt(cursor.getString(5)), 
 					Integer.parseInt(cursor.getString(6)), 
 					Integer.parseInt(cursor.getString(7)), 
-					Boolean.parseBoolean(cursor.getString(8)));
+					Integer.parseInt(cursor.getString(8)));
+	            db.close();
 	            return symbol;
 			}
 		}
 		symbol = new Symbol();
+		db.close();
 		return symbol;	
 	}
 	
@@ -107,16 +116,45 @@ public class DBHelper extends SQLiteOpenHelper {
 					Integer.parseInt(cursor.getString(5)), 
 					Integer.parseInt(cursor.getString(6)), 
 					Integer.parseInt(cursor.getString(7)), 
-					Boolean.parseBoolean(cursor.getString(8)));
+					Integer.parseInt(cursor.getString(8)));
+	            db.close();
 	            return symbol;
 			}
 		}
 		symbol = new Symbol();
+		db.close();
 		return symbol;
 	}
 	
 	public void deleteSymbol (Symbol symbol){
 		
+	}
+	
+	public void populate(SQLiteDatabase db){
+		
+		//Board 0, Pagina 1
+		db.insert(TABLE_SYMBOL, null, getContentValues(
+				0, 1, 0, 0, 1, "quero", "Eu quero"));
+		db.insert(TABLE_SYMBOL, null, getContentValues(
+				0, 2, 2, 4 , 2, "quero", "Eu quero"));
+	}
+	
+	public ContentValues getContentValues(int board_id, int child_board_id, int page, int position, int type, String image_path, String text){
+		ContentValues values = new ContentValues();
+		
+		values.put(BOARD_ID, board_id);
+		values.put(TEXT, text);
+		values.put(IMAGE_PATH, image_path);
+		values.put(TYPE, type);
+		values.put(POSITION, position);
+		values.put(PAGE, page);
+		values.put(PERMANENT, true);
+		if(type != TYPE_CATEGORY){
+			values.put(CHILD_BOARD_ID, -1); //Se não é categoria, não possui child board
+		}else{
+			values.put(CHILD_BOARD_ID, child_board_id);
+		}
+			return values;
 	}
 
 }

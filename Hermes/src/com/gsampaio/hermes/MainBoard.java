@@ -25,7 +25,7 @@ public class MainBoard extends FragmentActivity {
         setContentView(R.layout.main_board);
         
         Intent intent = this.getIntent();
-        board_id = intent.getIntExtra("board_id", -1);
+        board_id = intent.getIntExtra("board_id", 0);
         
         mPager = (ViewPager) findViewById(R.id.viewpager);
         List<Fragment> fragments = getFragments();

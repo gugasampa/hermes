@@ -10,10 +10,10 @@ public class Symbol {
 	private int type; //Tipo (1) Categoria (2) Símbolo final
 	private int position; // Posição do símbolo na prancha
 	private int page; //Página da prancha em que se encontra
-	private boolean permanent; //Se é ou não símbolo permanente (símbolos que já vem no app)
+	private int permanent; // 0 ou 1 Se é ou não símbolo permanente (símbolos que já vem no app)
 	
 	public Symbol(int id, int board_id, int child_board_id, String text, String image_path,
-			int type, int position, int page, boolean permanent) {
+			int type, int position, int page, int permanent) {
 		this.id = id;
 		this.board_id = board_id;
 		this.child_board_id = child_board_id;
@@ -81,10 +81,10 @@ public class Symbol {
 	public void setPage(int page) {
 		this.page = page;
 	}
-	public boolean isPermanent() {
+	public int isPermanent() {
 		return permanent;
 	}
-	public void setPermanent(boolean permanent) {
+	public void setPermanent(int permanent) {
 		this.permanent = permanent;
 	}
 	

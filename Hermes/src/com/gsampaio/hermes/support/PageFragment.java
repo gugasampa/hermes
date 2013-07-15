@@ -19,13 +19,25 @@ public class PageFragment extends Fragment {
 	 
 	 public static final PageFragment newInstance(Activity activity, int _board_id, int _page)
 	 {
-	   board_id = _board_id;
 	   ctx = activity;
-	   page = _page;
 	   
 	   PageFragment f = new PageFragment();
+	   Bundle args = new Bundle();
+       args.putInt("board_id", _board_id);
+       args.putInt("page", _page);
+       f.setArguments(args);
 	   return f;
 	 }
+	 
+	 @Override public void onCreate(Bundle savedInstanceState) {
+	        super.onCreate(savedInstanceState);
+
+	        Bundle args = getArguments();
+	        if (args != null) {
+	        	board_id = args.getInt("board_id");
+	            page = args.getInt("page");
+	        }
+	    }
 	 
 	 @Override
 	 public View onCreateView(LayoutInflater inflater, ViewGroup container,
