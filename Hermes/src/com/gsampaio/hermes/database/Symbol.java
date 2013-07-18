@@ -25,6 +25,19 @@ public class Symbol {
 		this.permanent = permanent;
 	}
 	
+	//Símbolo a ser inserido
+	public Symbol(int board_id, int child_board_id, String text, String image_path,
+			int type, int position, int page) {
+		this.board_id = board_id;
+		this.child_board_id = child_board_id;
+		this.text = text;
+		this.image_path = image_path;
+		this.type = type;
+		this.position = position;
+		this.page = page;
+		this.permanent = 0;
+	}
+	
 	//Símbolos vazios
 	public Symbol (){
 		this.id = -1;

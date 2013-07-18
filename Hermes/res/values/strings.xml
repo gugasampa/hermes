@@ -4,5 +4,11 @@
     <string name="hello_world">Hello world!</string>
     <string name="menu_settings">Settings</string>
     <string name="title_activity_main_board">Prancha Principal</string>
-
+    
+    <string name="symbol_text">Nome do símbolo</string>
+    <string name="symbol_type">O novo símbolo deve abrir uma nova prancha?</string>
+	<string name="yes">Sim</string>
+	<string name="no">Não</string>
+    
+    
 </resources>

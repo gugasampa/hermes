@@ -1,5 +1,6 @@
 package com.gsampaio.hermes.database;
 
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -124,6 +125,14 @@ public class DBHelper extends SQLiteOpenHelper {
 		symbol = new Symbol();
 		db.close();
 		return symbol;
+	}
+	
+	public int getNextBoardId(){
+		SQLiteDatabase db = this.getReadableDatabase();
+		Cursor cursor = db.query(TABLE_SYMBOL, 
+				new String[] {"MAX("+ID+")"}, null, null, null, null, null, null);
+		cursor.moveToFirst();
+		return Integer.parseInt(cursor.getString(0))+1;
 	}
 	
 	public void deleteSymbol (Symbol symbol){

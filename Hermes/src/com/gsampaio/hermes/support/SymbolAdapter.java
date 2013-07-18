@@ -1,7 +1,21 @@
 package com.gsampaio.hermes.support;
 
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.os.Environment;
+import android.os.Parcelable;
+import android.provider.MediaStore;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -20,6 +34,14 @@ public class SymbolAdapter extends BaseAdapter {
 	private Context mContext;
 	private int board_id;
 	private int page;
+	private Uri outputFileUri;
+
+	private static final int PICTURE_REQUEST_CODE = 1;
+	
+	protected int outputX = 400;
+	protected int outputY = 400;
+	protected int aspectX = 1;
+	protected int aspectY = 1;
 
 	 public SymbolAdapter(Context c, int board_id, int page) {
 	  mContext = c;
@@ -56,14 +78,14 @@ public class SymbolAdapter extends BaseAdapter {
 	  Symbol symbol = db.getSymbol(board_id, page, position);
 	  if(symbol.getId() == -1){ //símbolo vazio
 		  btn.setBackgroundResource(R.drawable.add);
-		  btn.setId(-1);
-		  btn.setOnClickListener(new blankSymbol(board_id));
+		  btn.setId(position);
+		  btn.setOnClickListener(new blankSymbol());
 	  }else{
 		  if(symbol.isPermanent()==1){
-			  int resID = mContext.getResources().getIdentifier("quero", "drawable", mContext.getPackageName());
+			  int resID = mContext.getResources().getIdentifier(symbol.getImage_path(), "drawable", mContext.getPackageName());
 			  btn.setBackgroundDrawable(mContext.getResources().getDrawable(resID));
 		  }else{
-			  //set background com caminho para imagem no cartão
+			  btn.setBackgroundDrawable(Drawable.createFromPath(symbol.getImage_path()));
 		  }
 		  btn.setId(symbol.getId());
 		  btn.setTag(symbol.getText());
@@ -79,19 +101,17 @@ public class SymbolAdapter extends BaseAdapter {
 	 OnClickListener finalSymbol = new OnClickListener(){
 		@Override
 		public void onClick(View v) {
-			Voice.speak(mContext, v.getTag().toString(), false);
+			MainBoard.speak(v.getTag().toString());
 		}
 	 };
 	 
 	 class blankSymbol implements OnClickListener{
-		 private final int board_id;
 		 
-		 public blankSymbol(int board_id){
-			 this.board_id = board_id;
+		 public blankSymbol(){
 		 }
 		 
 		 public void onClick(View v){
-			//Abre camera
+			openImageIntent(v.getId());
 		 }
 	 }
 	 
@@ -103,11 +123,65 @@ public class SymbolAdapter extends BaseAdapter {
 		 }
 		 
 		 public void onClick(View v){
-			Voice.speak(mContext, v.getTag().toString(), false);
+			MainBoard.speak(v.getTag().toString());
 			Intent intent = new Intent(mContext, MainBoard.class);
 			intent.putExtra("board_id", child_board_id);
 			mContext.startActivity(intent);
 		 }
 	 }
+	 
+	 private void openImageIntent(int btn_id) {
+
+		// Determina Uri da imagem para salva
+	    final File root = new File(mContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES) + File.separator + "Hermes" + File.separator);
+		root.mkdirs();
+		String fname = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+		final File sdImageMainDirectory = new File(root, fname);
+		outputFileUri = Uri.fromFile(sdImageMainDirectory);
+	
+		    // Camera.
+		    final List<Intent> cameraIntents = new ArrayList<Intent>();
+		    final Intent captureIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+		    final PackageManager packageManager = mContext.getPackageManager();
+		    final List<ResolveInfo> listCam = packageManager.queryIntentActivities(captureIntent, 0);
+		    for(ResolveInfo res : listCam) {
+		        final String packageName = res.activityInfo.packageName;
+		        final Intent intent = new Intent(captureIntent);
+		        intent.setComponent(new ComponentName(res.activityInfo.packageName, res.activityInfo.name));
+		        intent.setPackage(packageName);
+		        
+		        intent.putExtra("crop", "true");
+		        intent.putExtra("aspectX", aspectX);
+		        intent.putExtra("aspectY", aspectY);
+		        intent.putExtra("outputX",outputX);	
+		        intent.putExtra("outputY", outputY);
+		        intent.putExtra("scale", true);
+			    
+		    intent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
+		        cameraIntents.add(intent);
+		    }
+	
+		    // Filesystem
+		    final Intent galleryIntent = new Intent();
+		    galleryIntent.setType("image/*");
+		    galleryIntent.setAction(Intent.ACTION_GET_CONTENT);
+		    galleryIntent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
+		    
+		    galleryIntent.putExtra("crop", "true");
+		    galleryIntent.putExtra("aspectX", aspectX);
+		    galleryIntent.putExtra("aspectY", aspectY);
+		    galleryIntent.putExtra("outputX", outputX);	
+		    galleryIntent.putExtra("outputY", outputY);
+		    galleryIntent.putExtra("scale", true);
+		    // opções
+		    final Intent chooserIntent = Intent.createChooser(galleryIntent, "Select Source");
+	
+		    // Adiciona a camera nas opções
+		    chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, cameraIntents.toArray(new Parcelable[]{}));
+		    ((MainBoard) mContext).setUri(outputFileUri, btn_id);
+		    ((MainBoard) mContext).startActivityForResult(chooserIntent, PICTURE_REQUEST_CODE);
+		    
+	 }
+		
 	
 }
