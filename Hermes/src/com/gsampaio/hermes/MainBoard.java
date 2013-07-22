@@ -15,7 +15,6 @@ import android.speech.tts.TextToSpeech.OnInitListener;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -66,7 +65,6 @@ public class MainBoard extends FragmentActivity {
         if (mTTS != null) {
 			mTTS.stop();
 			mTTS.shutdown();
-			Log.i("destroyed","shutted up");
 		}
         super.onPause();
     }

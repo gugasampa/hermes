@@ -6,8 +6,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -18,10 +20,12 @@ import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.GridView;
+import android.widget.Toast;
 
 import com.gsampaio.hermes.MainBoard;
 import com.gsampaio.hermes.R;
@@ -91,8 +95,10 @@ public class SymbolAdapter extends BaseAdapter {
 		  btn.setTag(symbol.getText());
 		  if(symbol.getType() == 1){
 			  btn.setOnClickListener(new categorySymbol(symbol.getChild_board_id()));
+			  btn.setOnLongClickListener(deleteCategorySymbol);
 		  }else{
 			  btn.setOnClickListener(finalSymbol);
+			  btn.setOnLongClickListener(deletefinalSymbol);
 		  }
 	  }
 	  return btn;
@@ -130,6 +136,82 @@ public class SymbolAdapter extends BaseAdapter {
 		 }
 	 }
 	 
+	 private OnLongClickListener deleteCategorySymbol = new OnLongClickListener() {
+		@Override
+		public boolean onLongClick(View v) {
+			final int symbol_id = v.getId();
+			AlertDialog.Builder dialog = new AlertDialog.Builder(mContext);
+			dialog.setTitle("Cuidado!");
+			dialog.setMessage("Você tem certeza que deseja apagar esse símbolo e todas as suas pranchas filhas?");
+			
+			dialog.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					DBHelper db = new DBHelper(mContext);
+					boolean deleted = db.deleteCategorySymbol(symbol_id);
+					dialog.dismiss();
+					if(deleted){
+						((MainBoard) mContext).finish();
+						Intent intent = new Intent(mContext, MainBoard.class);
+				    	intent.putExtra("board_id", board_id);
+				    	mContext.startActivity(intent);
+				    	Toast.makeText(mContext, "Símbolo excluído com sucesso!", Toast.LENGTH_LONG).show();
+					}else{
+						Toast.makeText(mContext, "Este símbolo não pode ser excluído!", Toast.LENGTH_LONG).show();
+					}
+				}
+			});
+			dialog.setNegativeButton("Não", new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					dialog.dismiss();
+				}
+			});
+			dialog.create().show();
+			return true;
+		}
+	}; 
+	
+	private OnLongClickListener deletefinalSymbol = new OnLongClickListener() {
+		@Override
+		public boolean onLongClick(View v) {
+			final int symbol_id = v.getId();
+			AlertDialog.Builder dialog = new AlertDialog.Builder(mContext);
+			dialog.setTitle("Deseja excluir?");
+			dialog.setMessage("Você tem certeza que deseja apagar esse símbolo?");
+			
+			dialog.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					DBHelper db = new DBHelper(mContext);
+					boolean deleted = db.deleteFinalSymbol(symbol_id);
+					dialog.dismiss();
+					if(deleted){
+						((MainBoard) mContext).finish();
+						Intent intent = new Intent(mContext, MainBoard.class);
+				    	intent.putExtra("board_id", board_id);
+				    	mContext.startActivity(intent);
+				    	Toast.makeText(mContext, "Símbolo excluído com sucesso!", Toast.LENGTH_LONG).show();
+					}else{
+						Toast.makeText(mContext, "Este símbolo não pode ser excluído!", Toast.LENGTH_LONG).show();
+					}
+				}
+			});
+			dialog.setNegativeButton("Não", new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					dialog.dismiss();
+				}
+			});
+			dialog.create().show();
+			return true;
+		}
+	}; 
+	
+	
+	
+	
+	
 	 private void openImageIntent(int btn_id) {
 
 		// Determina Uri da imagem para salva

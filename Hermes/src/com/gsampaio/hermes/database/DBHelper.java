@@ -1,6 +1,8 @@
 package com.gsampaio.hermes.database;
 
 
+import java.io.File;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -42,7 +44,7 @@ public class DBHelper extends SQLiteOpenHelper {
 				TYPE+" INTEGER,"+
 				POSITION+" INTEGER,"+
 				PAGE+ " INTEGER,"+
-				PERMANENT+" BOOLEAN);";
+				PERMANENT+" INTEGER);";
         db.execSQL(CREATE_SYMBOLS_TABLE);
         populate(db);
 	}
@@ -132,11 +134,48 @@ public class DBHelper extends SQLiteOpenHelper {
 		Cursor cursor = db.query(TABLE_SYMBOL, 
 				new String[] {"MAX("+ID+")"}, null, null, null, null, null, null);
 		cursor.moveToFirst();
+		db.close();
 		return Integer.parseInt(cursor.getString(0))+1;
 	}
 	
-	public void deleteSymbol (Symbol symbol){
-		
+	public boolean deleteCategorySymbol (int symbol_id){
+		Symbol symbol_del = getSymbolById(symbol_id);
+		if(symbol_del.isPermanent()!=1){
+			SQLiteDatabase db = this.getWritableDatabase();
+			Cursor cursor = db.query(TABLE_SYMBOL, new String[]{ID},BOARD_ID+"=?" , new String[]{String.valueOf(symbol_del.getChild_board_id())}, null, null, null);
+			db.delete(TABLE_SYMBOL, ID+"=?", new String[] {String.valueOf(symbol_id)});
+			File image_del = new File(symbol_del.getImage_path());
+			image_del.delete();
+            
+			if (cursor!= null){
+				if(cursor.moveToFirst()){
+					do{
+						int child_id = Integer.parseInt(cursor.getString(0));
+						if(symbol_del.getType()==1){
+							deleteCategorySymbol(child_id);
+						}else{
+							deleteFinalSymbol(child_id);
+						}
+					}while(cursor.moveToNext());
+				}
+			}
+			db.close();
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean deleteFinalSymbol(int symbol_id){
+		Symbol symbol_del = getSymbolById(symbol_id);
+		if(symbol_del.isPermanent()!=1){
+			SQLiteDatabase db = this.getWritableDatabase();
+			db.delete(TABLE_SYMBOL, ID+"=?", new String[] {String.valueOf(symbol_id)});
+			File image_del = new File(symbol_del.getImage_path());
+			image_del.delete();
+			db.close();
+			return true;
+		}
+		return false;
 	}
 	
 	public void populate(SQLiteDatabase db){
@@ -157,7 +196,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		values.put(TYPE, type);
 		values.put(POSITION, position);
 		values.put(PAGE, page);
-		values.put(PERMANENT, true);
+		values.put(PERMANENT, 1);
 		if(type != TYPE_CATEGORY){
 			values.put(CHILD_BOARD_ID, -1); //Se não é categoria, não possui child board
 		}else{
