@@ -2,11 +2,16 @@ package com.gsampaio.hermes;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
+import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
 import android.net.Uri;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
@@ -22,6 +27,7 @@ import android.widget.RadioButton;
 
 import com.gsampaio.hermes.database.DBHelper;
 import com.gsampaio.hermes.database.Symbol;
+import com.gsampaio.hermes.support.AttentionListener;
 import com.gsampaio.hermes.support.BoardPagerAdapter;
 import com.gsampaio.hermes.support.HApplication;
 import com.gsampaio.hermes.support.PageFragment;
@@ -36,6 +42,9 @@ public class MainBoard extends FragmentActivity {
     private int btn_id;
 	private static TextToSpeech mTTS;
     private boolean isCategory=false;
+    private SensorManager mSensorManager;
+    private AttentionListener mAttentionListener;
+    private MediaPlayer mMediaPlayer;
     
 	private static final int PICTURE_REQUEST_CODE = 1;
 
@@ -51,6 +60,22 @@ public class MainBoard extends FragmentActivity {
         List<Fragment> fragments = getFragments();
         pagerAdapter = new BoardPagerAdapter(getSupportFragmentManager(), fragments);
         mPager.setAdapter(pagerAdapter);
+        
+        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        
+        mAttentionListener = new AttentionListener();   
+        mAttentionListener.setOnShakeListener(new AttentionListener.OnShakeListener() {
+          public void onShake() {
+        	mMediaPlayer = MediaPlayer.create(MainBoard.this, R.raw.bell2);
+      		mMediaPlayer.setOnCompletionListener(new OnCompletionListener() {			
+      			@Override
+      			public void onCompletion(MediaPlayer mp) {
+      				mMediaPlayer.release();
+      			}
+      		});
+      		mMediaPlayer.start();
+          }
+        });
     }
     
     @Override
@@ -60,6 +85,9 @@ public class MainBoard extends FragmentActivity {
 			@Override
 			public void onInit(int status) {}	
 		});
+        mSensorManager.registerListener(mAttentionListener,
+                mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
+                SensorManager.SENSOR_DELAY_UI);
     }
     
     @Override
@@ -68,6 +96,7 @@ public class MainBoard extends FragmentActivity {
 			mTTS.stop();
 			mTTS.shutdown();
 		}
+        mSensorManager.unregisterListener(mAttentionListener);
         super.onPause();
     }
     
