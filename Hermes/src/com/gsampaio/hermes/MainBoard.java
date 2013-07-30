@@ -2,7 +2,6 @@ package com.gsampaio.hermes;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -15,6 +14,7 @@ import android.speech.tts.TextToSpeech.OnInitListener;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -23,7 +23,9 @@ import android.widget.RadioButton;
 import com.gsampaio.hermes.database.DBHelper;
 import com.gsampaio.hermes.database.Symbol;
 import com.gsampaio.hermes.support.BoardPagerAdapter;
+import com.gsampaio.hermes.support.HApplication;
 import com.gsampaio.hermes.support.PageFragment;
+
 public class MainBoard extends FragmentActivity {
 	
     private BoardPagerAdapter pagerAdapter;
@@ -156,5 +158,18 @@ public class MainBoard extends FragmentActivity {
 					e.printStackTrace();
 				}
 			}
+	}
+	
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		switch (keyCode) {
+		case KeyEvent.KEYCODE_BACK:
+			HApplication application = (HApplication) getApplicationContext();
+	    	application.removeLastSentence();
+	    	this.finish();
+			return true;
+		default:
+			return super.onKeyDown(keyCode, event);
+		}
 	}
 }

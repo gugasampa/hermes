@@ -107,7 +107,9 @@ public class SymbolAdapter extends BaseAdapter {
 	 OnClickListener finalSymbol = new OnClickListener(){
 		@Override
 		public void onClick(View v) {
-			MainBoard.speak(v.getTag().toString());
+			HApplication application = (HApplication) mContext.getApplicationContext();
+			application.speakSentences(v.getTag().toString());
+//			MainBoard.speak(v.getTag().toString());
 		}
 	 };
 	 
@@ -130,6 +132,8 @@ public class SymbolAdapter extends BaseAdapter {
 		 
 		 public void onClick(View v){
 			MainBoard.speak(v.getTag().toString());
+			HApplication application = (HApplication) mContext.getApplicationContext();
+			application.addSentence(v.getTag().toString());
 			Intent intent = new Intent(mContext, MainBoard.class);
 			intent.putExtra("board_id", child_board_id);
 			mContext.startActivity(intent);
