@@ -108,8 +108,12 @@ public class SymbolAdapter extends BaseAdapter {
 		@Override
 		public void onClick(View v) {
 			HApplication application = (HApplication) mContext.getApplicationContext();
-			application.speakSentences(v.getTag().toString());
-//			MainBoard.speak(v.getTag().toString());
+			if(v.getTag().toString().equals("não") && v.getId()!=4){
+				MainBoard.speak(v.getTag().toString());
+				application.addSentence(v.getTag().toString());
+			}else{
+				application.speakSentences(v.getTag().toString());
+			}
 		}
 	 };
 	 

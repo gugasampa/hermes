@@ -16,6 +16,7 @@ public class PageFragment extends Fragment {
 	 public static Activity ctx;
 	 public static int board_id;
 	 public static int page;
+	 public static GridView gridview;
 	 
 	 public static final PageFragment newInstance(Activity activity, int _board_id, int _page)
 	 {
@@ -43,9 +44,12 @@ public class PageFragment extends Fragment {
 	 public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	   Bundle savedInstanceState) {
 	   View v = inflater.inflate(R.layout.fragment_screen_slide_page, container, false);
-	   GridView gridview = (GridView) v.findViewById(R.id.itensGrid);
+	   gridview = (GridView) v.findViewById(R.id.itensGrid);
 	   gridview.setAdapter(new SymbolAdapter(ctx, board_id, page));
-	 
 	   return v;
+	 }
+	 
+	 public void clearGridView(){
+		 gridview.setAdapter(null);
 	 }
 }

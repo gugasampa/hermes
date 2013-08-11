@@ -23,7 +23,13 @@ public class HApplication extends Application {
 	public void removeLastSentence(){
 		if(sentences.size()>0){
 			sentences.remove(sentences.size()-1);
+			if(sentences.size()>0){
+				if(sentences.get(sentences.size()-1).equals("não")){
+					sentences.remove(sentences.size()-1);
+				}
+			}
 		}
+		
 	}
 	
 	public void speakSentences(String finalsymbol){

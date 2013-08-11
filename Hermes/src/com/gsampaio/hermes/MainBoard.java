@@ -57,9 +57,6 @@ public class MainBoard extends FragmentActivity {
         board_id = intent.getIntExtra("board_id", 0);
         
         mPager = (ViewPager) findViewById(R.id.viewpager);
-        List<Fragment> fragments = getFragments();
-        pagerAdapter = new BoardPagerAdapter(getSupportFragmentManager(), fragments);
-        mPager.setAdapter(pagerAdapter);
         
         mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         
@@ -81,6 +78,9 @@ public class MainBoard extends FragmentActivity {
     @Override
     protected void onResume(){
     	super.onResume();
+    	List<Fragment> fragments = getFragments();
+        pagerAdapter = new BoardPagerAdapter(getSupportFragmentManager(), fragments);
+        mPager.setAdapter(pagerAdapter);
         mTTS = new TextToSpeech(this, new OnInitListener() {
 			@Override
 			public void onInit(int status) {}	
@@ -92,6 +92,13 @@ public class MainBoard extends FragmentActivity {
     
     @Override
     protected void onPause(){
+    	mPager.setAdapter(null);
+    	for (int i=0; i<pagerAdapter.getCount(); i++){
+    		PageFragment page = (PageFragment) pagerAdapter.getItem(i);
+    		page.clearGridView();
+    	}
+    	
+    	
         if (mTTS != null) {
 			mTTS.stop();
 			mTTS.shutdown();
