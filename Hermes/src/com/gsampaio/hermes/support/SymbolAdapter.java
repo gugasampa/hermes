@@ -123,7 +123,7 @@ public class SymbolAdapter extends BaseAdapter {
 		 }
 		 
 		 public void onClick(View v){
-			openImageIntent(v.getId());
+			openImageIntent(v.getId(), ((MainBoard) mContext).getCurrentPage());
 		 }
 	 }
 	 
@@ -220,7 +220,7 @@ public class SymbolAdapter extends BaseAdapter {
 	
 	
 	
-	 private void openImageIntent(int btn_id) {
+	 private void openImageIntent(int btn_id, int page) {
 
 		// Determina Uri da imagem para salva
 	    final File root = new File(mContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES) + File.separator + "Hermes" + File.separator);
@@ -268,7 +268,7 @@ public class SymbolAdapter extends BaseAdapter {
 	
 		    // Adiciona a camera nas opções
 		    chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, cameraIntents.toArray(new Parcelable[]{}));
-		    ((MainBoard) mContext).setUri(outputFileUri, btn_id);
+		    ((MainBoard) mContext).setUri(outputFileUri, btn_id, page);
 		    ((MainBoard) mContext).startActivityForResult(chooserIntent, PICTURE_REQUEST_CODE);
 		    
 	 }

@@ -8,6 +8,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 public class DBHelper extends SQLiteOpenHelper {
 	
@@ -69,7 +70,6 @@ public class DBHelper extends SQLiteOpenHelper {
 		}else{
 			values.put(CHILD_BOARD_ID, symbol.getChild_board_id());
 		}
-		
 		long id = db.insert(TABLE_SYMBOL, null, values);
 		db.close();
 		return id;

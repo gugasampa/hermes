@@ -19,6 +19,7 @@ import android.speech.tts.TextToSpeech.OnInitListener;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,6 +39,7 @@ public class MainBoard extends FragmentActivity {
     private ViewPager mPager;
     private static final int NUMBER_PAGES = 3;
     private int board_id;
+    private int last_page;
     private Uri outputFileUri;
     private int btn_id;
 	private static TextToSpeech mTTS;
@@ -173,16 +175,21 @@ public class MainBoard extends FragmentActivity {
         	type=2;
         }
     	db.addSymbol(new Symbol(board_id, child_board_id, text, outputFileUri.getPath(),
-    			type, btn_id , mPager.getCurrentItem()));
+    			type, btn_id , last_page));
     	finish();
     	Intent intent = new Intent(this, MainBoard.class);
     	intent.putExtra("board_id", board_id);
     	startActivity(intent);
     }
     
-	public void setUri(Uri uri, int btn_id){
+	public void setUri(Uri uri, int btn_id, int page){
 		this.outputFileUri = uri;
 		this.btn_id = btn_id;
+		this.last_page = page;
+	}
+	
+	public int getCurrentPage(){
+		return mPager.getCurrentItem();
 	}
 	
 	public static void speak(final String text) {
