@@ -154,11 +154,11 @@ public class MainBoard extends FragmentActivity {
     public void onRadioButtonClicked(View view) {
         boolean checked = ((RadioButton) view).isChecked();
         switch(view.getId()) {
-            case R.radio.categoria:
+            case R.id.dialog_categoria:
                 if (checked)
                 	isCategory = true;
                 break;
-            case R.radio.symbol_final:
+            case R.id.dialog_symbol_final:
                 if (checked)
                 	isCategory = false;
                 break;

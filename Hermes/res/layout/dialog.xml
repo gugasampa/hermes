@@ -28,14 +28,14 @@
         android:id="@+id/radio_group">
 
 	    <RadioButton
-	        android:id="@+radio/categoria"
+	        android:id="@+id/dialog_categoria"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:text="@string/yes"
 	        android:onClick="onRadioButtonClicked"/>
 
 	    <RadioButton
-	        android:id="@+radio/symbol_final"
+	        android:id="@+id/dialog_symbol_final"
 	        android:checked="true"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
