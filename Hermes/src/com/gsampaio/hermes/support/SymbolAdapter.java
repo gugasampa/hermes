@@ -18,6 +18,7 @@ import android.net.Uri;
 import android.os.Environment;
 import android.os.Parcelable;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
@@ -228,8 +229,8 @@ public class SymbolAdapter extends BaseAdapter {
 		String fname = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
 		final File sdImageMainDirectory = new File(root, fname);
 		outputFileUri = Uri.fromFile(sdImageMainDirectory);
-	
-		    // Camera.
+
+         // Camera.
 		    final List<Intent> cameraIntents = new ArrayList<Intent>();
 		    final Intent captureIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
 		    final PackageManager packageManager = mContext.getPackageManager();
@@ -239,15 +240,7 @@ public class SymbolAdapter extends BaseAdapter {
 		        final Intent intent = new Intent(captureIntent);
 		        intent.setComponent(new ComponentName(res.activityInfo.packageName, res.activityInfo.name));
 		        intent.setPackage(packageName);
-		        
-		        intent.putExtra("crop", "true");
-		        intent.putExtra("aspectX", aspectX);
-		        intent.putExtra("aspectY", aspectY);
-		        intent.putExtra("outputX",outputX);	
-		        intent.putExtra("outputY", outputY);
-		        intent.putExtra("scale", true);
-			    
-		    intent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
+		        intent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
 		        cameraIntents.add(intent);
 		    }
 	
@@ -256,13 +249,6 @@ public class SymbolAdapter extends BaseAdapter {
 		    galleryIntent.setType("image/*");
 		    galleryIntent.setAction(Intent.ACTION_GET_CONTENT);
 		    galleryIntent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
-		    
-		    galleryIntent.putExtra("crop", "true");
-		    galleryIntent.putExtra("aspectX", aspectX);
-		    galleryIntent.putExtra("aspectY", aspectY);
-		    galleryIntent.putExtra("outputX", outputX);	
-		    galleryIntent.putExtra("outputY", outputY);
-		    galleryIntent.putExtra("scale", true);
 		    // opções
 		    final Intent chooserIntent = Intent.createChooser(galleryIntent, "Select Source");
 	

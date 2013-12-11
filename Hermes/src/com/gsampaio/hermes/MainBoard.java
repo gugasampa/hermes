@@ -1,8 +1,5 @@
 package com.gsampaio.hermes;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -19,7 +16,6 @@ import android.speech.tts.TextToSpeech.OnInitListener;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,6 +28,15 @@ import com.gsampaio.hermes.support.AttentionListener;
 import com.gsampaio.hermes.support.BoardPagerAdapter;
 import com.gsampaio.hermes.support.HApplication;
 import com.gsampaio.hermes.support.PageFragment;
+
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
+
+import eu.janmuller.android.simplecropimage.CropImage;
 
 public class MainBoard extends FragmentActivity {
 	
@@ -49,6 +54,7 @@ public class MainBoard extends FragmentActivity {
     private MediaPlayer mMediaPlayer;
     
 	private static final int PICTURE_REQUEST_CODE = 1;
+    private static final int PICTURE_CROP_CODE = 2;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -121,14 +127,34 @@ public class MainBoard extends FragmentActivity {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data){
     	super.onActivityResult(requestCode, resultCode, data);
 	    if(resultCode == RESULT_OK){
-	        if(requestCode == PICTURE_REQUEST_CODE){
+            if (requestCode == PICTURE_REQUEST_CODE){
+
+                try{
+                    InputStream inputStream = getContentResolver().openInputStream(data.getData());
+                    FileOutputStream fileOutputStream = new FileOutputStream(outputFileUri.getPath());
+                    copyStream(inputStream, fileOutputStream);
+                    fileOutputStream.close();
+                    inputStream.close();
+                }catch (Exception e){}
+
+
+                Intent intent = new Intent(this, CropImage.class);
+                intent.putExtra(CropImage.IMAGE_PATH, outputFileUri.getPath());
+                intent.putExtra(CropImage.SCALE, true);
+
+                intent.putExtra(CropImage.ASPECT_X, 1);
+                intent.putExtra(CropImage.ASPECT_Y, 1);
+
+                startActivityForResult(intent, PICTURE_CROP_CODE);
+            }
+	        else if(requestCode == PICTURE_CROP_CODE){
 	        	AlertDialog.Builder dialog = new AlertDialog.Builder(this);
 	        	dialog.setTitle("Novo símbolo");
 	        	LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	    		View layout = inflater.inflate(R.layout.dialog, null);
 	    		final EditText etText = (EditText) layout.findViewById(R.id.newSymbol);
 	        	dialog.setView(layout);
-	        	
+
 	        	dialog.setPositiveButton("OK", new OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
@@ -144,12 +170,20 @@ public class MainBoard extends FragmentActivity {
 					}
 				});
 	        	dialog.create().show();
-	        	
-	            
 	        }
-	        
+
 	    }
 	}
+
+    public static void copyStream(InputStream input, OutputStream output)
+            throws IOException {
+
+        byte[] buffer = new byte[1024];
+        int bytesRead;
+        while ((bytesRead = input.read(buffer)) != -1) {
+            output.write(buffer, 0, bytesRead);
+        }
+    }
     
     public void onRadioButtonClicked(View view) {
         boolean checked = ((RadioButton) view).isChecked();
